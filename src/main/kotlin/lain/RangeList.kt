@@ -26,15 +26,36 @@ data class RangeList(val list: List<Range>) {
             val first = RangeList(listOf(both[0]))
             val rest = both.subList(1, both.size)
 
-            // idk how this works but uhh i think it does work...
-            // maybe
-            fun plusAnd (a: RangeList, b: Range): RangeList {
-                val (m, r) = a.list.partition { Range.overlaps(it, b) }
-                val c:Range = m.fold(b) { q, e -> Range.and(q, e) }
-                return RangeList(r.plus(c))
-            }
-
             return rest.fold(first) { q, e -> plusAnd(q, e) }
+        }
+
+        // All values of u that are not values of a
+        fun setDiff (u: RangeList, a: RangeList): RangeList {
+            val (match, rest) = u.list.partition { a.hasOverlap(it) }
+            val amatch = a.list.filter { u.hasOverlap(it) }
+
+            // rest are all not values of a
+            // just need to check match now...
+            // maybe
+            val res = match.map {
+                val muta = mutableListOf<List<Range>>()
+                for (q in amatch)
+                    if (Range.overlaps(it, q))
+                        muta.add(Range.subtract(it, q))
+                muta.toList()
+            }.flatten().flatten()
+
+            return RangeList(res.subList(1, res.size).fold(RangeList(listOf(res[0]))) {
+                q, e -> plusAnd(q, e)
+            }.list.plus(rest))
+        }
+
+        // idk how this works but uhh i think it does work...
+        // maybe
+        fun plusAnd (a: RangeList, b: Range): RangeList {
+            val (m, r) = a.list.partition { Range.overlaps(it, b) }
+            val c:Range = m.fold(b) { q, e -> Range.and(q, e) }
+            return RangeList(r.plus(c))
         }
     }
 
