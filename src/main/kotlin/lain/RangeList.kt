@@ -50,6 +50,12 @@ data class RangeList(val list: List<Range>) {
             }.list.plus(rest))
         }
 
+        // Values that are in either a or b, but not both
+        fun symmetricDiff(a: RangeList, b: RangeList): RangeList {
+            // union minus intersection
+            return setDiff(union(a, b), intersection(a, b))
+        }
+
         // idk how this works but uhh i think it does work...
         // maybe
         fun plusAnd (a: RangeList, b: Range): RangeList {
