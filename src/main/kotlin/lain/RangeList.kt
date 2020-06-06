@@ -1,5 +1,7 @@
 package lain
 
+import java.math.BigInteger
+
 data class RangeList(val list: List<Range>) {
     companion object {
         // creates a rangelist from input range
@@ -9,6 +11,10 @@ data class RangeList(val list: List<Range>) {
             val rest = list.subList(1, list.size)
 
             return rest.fold(first) { a, e -> a.plus(e) }
+        }
+
+        fun from(range: Range):RangeList {
+            return from(listOf(range))
         }
 
         // all values that are a member of a, b, or both
@@ -65,6 +71,22 @@ data class RangeList(val list: List<Range>) {
         }
     }
 
+    fun union(b: RangeList): RangeList {
+        return union(this, b)
+    }
+
+    fun intersection(b: RangeList): RangeList {
+        return intersection(this, b)
+    }
+
+    fun setDiff(b: RangeList): RangeList {
+        return setDiff(this, b)
+    }
+
+    fun symmetricDiff(b: RangeList): RangeList {
+        return symmetricDiff(this, b)
+    }
+
     // returns a rangelist that is this list with range element added
     // merges ranges if there is an overlap with range
     fun plus(range: Range): RangeList {
@@ -84,5 +106,17 @@ data class RangeList(val list: List<Range>) {
         for (e in this.list)
             if (Range.overlaps(e, range)) return true
         return false
+    }
+
+    // prints the RangeList by turning the width of each range into a char array
+    fun print() {
+        val list = this.sort().list
+        val arr = list.subList(1, list.size).fold(BigInteger.valueOf(list[0].width().toLong()).toByteArray()) {
+            a, e -> a.plus(BigInteger.valueOf(e.width().toLong()).toByteArray())
+        }
+
+        for (a in arr) {
+            print(a.toChar())
+        }
     }
 }

@@ -1,6 +1,14 @@
 package lain
 
+import kotlin.math.abs
+
 data class Range(val min:Int, val max: Int) {
+    init {
+        if (min > max) {
+            throw Exception("Range created with min greater than max, min: $min max: $max")
+        }
+    }
+
     companion object {
         fun and(a:Range, b:Range):Range {
             val min = if (a.min <= b.min) b.min
@@ -53,5 +61,10 @@ data class Range(val min:Int, val max: Int) {
     fun isEmpty():Boolean {
         if (this.min >= this.max) return true
         return false
+    }
+
+    // returns the difference between min and max
+    fun width(): Int {
+        return (abs(this.min - this.max))
     }
 }
