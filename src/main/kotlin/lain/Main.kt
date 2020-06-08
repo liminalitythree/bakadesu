@@ -1,6 +1,7 @@
 package lain
 
 import java.io.File
+import com.vdurmont.emoji.EmojiParser
 
 fun main(args: Array<String>) {
     if (args.isEmpty()) {
@@ -10,7 +11,14 @@ fun main(args: Array<String>) {
 
     val file = File(args[0])
 
-    val tokens = Lexer(file.readText()).scanTokens()
+    val text = file.readText()
+    val emojis = EmojiParser.extractEmojis(text)
+    println(emojis)
+
+    val tokens = Lexer(emojis).scanTokens()
     val sexpr = Parser(tokens).parse()
-    Interpreter().eval(sexpr).print()
+    val res = Interpreter().eval(sexpr)
+    println(res)
+    println()
+    res.print()
 }

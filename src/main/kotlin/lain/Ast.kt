@@ -14,7 +14,7 @@ data class BList(val start: Token, val list: List<Sexpr>) : Sexpr()
 
 sealed class Symbol : Sexpr()
 
-data class Operator(val token: Token) : Symbol()
+data class Identifier(val token: Token, val name: String) : Symbol()
 
 // since the normal range is already using Range... maybe
 // maybe

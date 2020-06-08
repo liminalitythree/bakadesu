@@ -4,11 +4,12 @@ import java.lang.NullPointerException
 
 /* grammar:
 s_expr      = symbol | list
-list        = "(" s_expr+ ")"
-symbol      = range | operator
+list        = emoji_leftparen s_expr+ emoji_rightparen
+symbol      = range | identifier
 range       = "[" number "," number "]"
-operator    = "+" | "&" | "-" | "^"
 number      = [0-9]+
+identifier  = emoji+
+emoji       = : [a-z0-9_] :
  */
 
 class Parser(private val tokens: List<Token>) {
@@ -46,11 +47,21 @@ class Parser(private val tokens: List<Token>) {
 
     // symbol = range | operator
     private fun symbol(): Sexpr {
-        // if token is "[", its a range, otherwise its an operator
+        // if token is "[", its a range, otherwise its an identifier
         // maybe
         if (match(TokenType.LEFT_BRACKET)) return range()
 
-        return operator()
+        return identifier()
+    }
+
+    private fun identifier(): Sexpr {
+        val ident = consume(TokenType.IDENTIFIER, "Expected an identifier.")
+
+        if (ident.literal != null) {
+            return Identifier(ident, ident.literal as String)
+        } else {
+            throw NullPointerException("Identifier token had null literal.")
+        }
     }
 
     // range = "[" number "," number "]"
@@ -63,22 +74,6 @@ class Parser(private val tokens: List<Token>) {
         consume(TokenType.RIGHT_BRACKET, "Expected closing ']' in range expression.")
 
         return AstRange(start, Range(min, max))
-    }
-
-    // operator = "+" | "&" | "-" | "^"
-    private fun operator(): Sexpr {
-        val token = peek()
-
-        if (!match(
-                        TokenType.UNION,
-                        TokenType.INTERSECTION,
-                        TokenType.SETDIFF,
-                        TokenType.SYMDIFF
-            )) {
-            error(token.line, "Expected an operator at ${token.type}.")
-        }
-
-        return Operator(token)
     }
 
     private fun number(): Int {
@@ -112,7 +107,7 @@ class Parser(private val tokens: List<Token>) {
     private fun consume(type: TokenType, message: String): Token {
         if (check(type)) return advance()
 
-        error(peek().line, message)
+        error(-1, message)
 
         // this is never called as error() calls exitProcess
         // maybe
