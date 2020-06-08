@@ -41,8 +41,6 @@ class Lexer(val source: List<String>) {
     private fun number() {
         while (ClockNumbers.isClock(peek())) advance()
 
-        println(source.subList(start, current))
-
         addToken(TokenType.NUMBER, ClockNumbers.parseClocks(source.subList(start, current)))
     }
 

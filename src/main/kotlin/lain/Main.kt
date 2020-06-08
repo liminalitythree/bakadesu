@@ -19,6 +19,5 @@ fun main(args: Array<String>) {
     val sexpr = Parser(tokens).parse()
     val res = Interpreter().eval(sexpr)
     println(res)
-    println()
     res.print()
 }

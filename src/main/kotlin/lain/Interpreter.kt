@@ -53,7 +53,6 @@ class Interpreter() {
     private fun blist(list: BList): RangeList {
         // first element should be an operator
         if (list.list[0] !is Identifier) {
-            println(list.list[0])
             error(-6969, "First element in list is not an identifier")
         }
         else {
